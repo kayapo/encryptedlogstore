@@ -73,7 +73,7 @@ while ( my $line = <> ) {
 
     my $ciphertext = $rsa_pub->encrypt(\$line);
     open LOG,">>","$logDir/$logFile" || die "I don't open file in $logDir/$logFile\n";
-    print LOG $ciphertext;
+    print STDERR length($ciphertext)."\n";
     close LOG;
 }
 
