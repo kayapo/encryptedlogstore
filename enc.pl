@@ -59,7 +59,7 @@ unless ( defined $logFile || defined $dateFormatedLogFiles ) {
 }
 
 # Betolti a kulcsfilet
-open KEYFILE,"<",$keyFile;
+open KEYFILE,"<",$keyFile || die "$!\n";
 my @keyLines = <KEYFILE>;
 $keyFile = join "", @keyLines;
 close KEYFILE;
@@ -73,7 +73,8 @@ while ( my $line = <> ) {
 
     my $ciphertext = $rsa_pub->encrypt(\$line);
     open LOG,">>","$logDir/$logFile" || die "I don't open file in $logDir/$logFile\n";
-    print STDERR length($ciphertext)."\n";
+    print LOG $ciphertext;
+    print STDERR length($ciphertext)." ";
     close LOG;
 }
 
