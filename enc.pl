@@ -1,6 +1,5 @@
 #!/usr/bin/perl -w
 use strict;
-use Crypt::OpenSSL::Random;
 use Crypt::OpenSSL::RSA;
 use Getopt::Long;
 use Time::HiRes qw( gettimeofday );
