@@ -3,10 +3,11 @@ use strict;
 use Crypt::OpenSSL::RSA;
 use Getopt::Long;
 
+Crypt::OpenSSL::RSA->import_random_seed();
+
 my $keyFile;
 my $inFile;
 my $encData;
-my $n;
 my $plainLine;
 
 my $options = GetOptions(
@@ -24,11 +25,13 @@ open KEYFILE,"<",$keyFile || die "I don't open key file:\n\t$!\n";
 my @keyLines = <KEYFILE>;
 $keyFile = join "", @keyLines;
 close KEYFILE;
-my $rsa_priv = Crypt::OpenSSL::RSA->new_private_key($keyFile) || die "$!\n";
+my $rsa_priv = Crypt::OpenSSL::RSA->new_private_key($keyFile) || die "I don't use key!\n\t$!\n";
 
 open ENCFILE, "<", $inFile || die "I don't open input file:\n\t$!\n";
-while ( ($n = read ENCFILE, $encData, 256) != 0 ) {
-    my $last = chop $encData;
+while ( (read ENCFILE, $encData, $rsa_priv->size()) != 0 ) {
     $plainLine = $rsa_priv->decrypt($encData);
     print $plainLine;
 }
+close ENCFILE;
+
+print "\n";
