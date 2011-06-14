@@ -15,6 +15,9 @@ Crypt::OpenSSL::RSA->import_random_seed();
 # Kulcs generalas:
 #   Jelszoval vedett RSA privat kulcs -> /usr/bin/openssl genrsa -aes256 -out private.pem 2048
 #   Publikus kulcs -> /usr/bin/openssl rsa -in private.pem -out public.pem -outform PEM -pubout
+#
+# Logfile formatum, strftime formatalt string
+#   Info -> man strftime
 
 my $sec;
 my $microsec;
