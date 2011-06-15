@@ -53,7 +53,8 @@ unless ( defined $logFile ) {
     exit 1;
 }
 
-
+# Betolti a publikus kulcsot ezzel fogja
+# titkositani a logsorokat.
 my $rsa_pub = LoadKey($keyFile);
 
 # Var a logsorokra
@@ -102,16 +103,12 @@ sub LogLocation {
 sub LogDir {
     my $logdir = shift;
     $logdir =~ s/[^\/]*$//;
-    print "$logdir\n";
     unless ( -d $logdir ) {
         my @dirs = split /\//, $logdir;
-        print "@dirs\n";
         my $dir = '';
         foreach my $d ( @dirs ) {
             $dir .= "$d/";
-            print "$dir\n";
             unless ( -d $dir ) {
-                print "mkdir $dir\n";
                 mkdir $dir, 0755 || die "I can't make directory in $logdir\n$!\n";
             }
         }

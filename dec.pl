@@ -3,7 +3,6 @@ use strict;
 use Crypt::OpenSSL::RSA;
 use Getopt::Long;
 use Convert::PEM;
-use MIME::Base64;
 
 Crypt::OpenSSL::RSA->import_random_seed();
 
