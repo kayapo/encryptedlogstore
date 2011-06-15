@@ -43,15 +43,9 @@ if ( defined $help ) {
     exit 0;
 }
 
-# Kilep ha a -k --keyfile nincs megadva
-unless ( defined $keyFile ) {
-    print STDERR "Keyfile is not set!\n";
-    exit 1;
-}
-
-# Kilep, ha  a -f --log-file nincs megadva
-unless ( defined $logFile ) {
-    print STDERR "--log-file or --date-formated-logfiles required!\n";
+# Kilep ha a -k --keyfile es a -f --log-file nincs megadva
+unless ( defined $keyFile && defined $logFile ) {
+    print STDERR "--log-file and --keyfile required\n";
     exit 1;
 }
 
