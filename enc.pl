@@ -135,6 +135,9 @@ sub LogDir {
 # Help meszazs
 sub help {
 print<<HELP;
+$0 write encrypted log lines from STDIN to a file.
+The encryption use PEM formated RSA public key.
+
 Usage: $0 -k <public.pem> -f <location_of.log>
     -f  --log-file  Logfile destination. The strftime escape format supported
     -k  --keyfile   RSA public key location
