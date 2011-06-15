@@ -4,6 +4,7 @@ use Crypt::OpenSSL::RSA;
 use Getopt::Long;
 use Time::HiRes qw( gettimeofday );
 use POSIX qw( strftime );
+use Net::NTP qw( get_ntp_response );
 
 Crypt::OpenSSL::RSA->import_random_seed();
 
@@ -11,6 +12,7 @@ Crypt::OpenSSL::RSA->import_random_seed();
 #    libcrypt-openssl-random-perl
 #    libcrypt-openssl-rsa-perl
 #    libcrypt-openssl-bignum-perl
+#    libnet-ntp-perl
 #
 # Kulcs generalas:
 #   Jelszoval vedett RSA privat kulcs -> /usr/bin/openssl genrsa -aes256 -out private.pem 2048
@@ -29,12 +31,15 @@ my $line;
 my $logFile;
 my $help;
 my $keyFile;
+my $ntpServer;
+my %NTP;
 
 # A parancssori kapcsolok elolvasasa
 my $options = GetOptions(
                          "f|log-file=s" => \$logFile,
                          "h|?|help" => \$help,
-                         "k|keyfile=s" => \$keyFile
+                         "k|keyfile=s" => \$keyFile,
+                         "n|ntpserver=s" => \$ntpServer
                          );
 
 # Kiirja a help -et, ha a -h -? --help kapcsolo meg van adva
@@ -57,9 +62,15 @@ while ( my $line = <> ) {
     # Ures sornal kilep a program
     last if $line eq '';
     
-    # Itt all elo a microtime stamp egyelore a gep sajat orajabol
-    ( $sec, $microsec ) = gettimeofday;
-    $line = sprintf "%d.%0.6d\t$line", $sec, $microsec, $line;
+    # Itt all elo a microtime stamp NTP serverbol
+    if ( defined $ntpServer ) {
+        %NTP = get_ntp_response($ntpServer, 123);
+        $line = ( $NTP{"Reference Timestamp"} + $NTP{"Root Delay"} ) . "\t" . $line;
+    } else {
+        # vagy a gep sajat orajabol
+        ( $sec, $microsec ) = gettimeofday;
+        $line = sprintf "%d.%0.6d\t$line", $sec, $microsec, $line;
+    }
     
     # Eloallitja a logfile helyet es nevet majd leelenorzi, hogy letezik-e?
     my $log = LogLocation($logFile);
@@ -126,15 +137,18 @@ sub LogDir {
     }
 }
 
+
+
 # Help meszazs
 sub help {
 print<<HELP;
 $0 write encrypted log lines from STDIN to a file.
 The encryption use PEM formated RSA public key.
 
-Usage: $0 -k <public.pem> -f <location_of.log>
+Usage: $0 -k <public.pem> -f <location_of.log> [-n pool.ntp.org]
     -f  --log-file  Logfile destination. The strftime escape format supported
     -k  --keyfile   RSA public key location
+    -n  --ntpserver Use this NTP server for the timestamps
     -h  -?  --help  This message
     
     Key generation:
